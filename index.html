@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Descendência por Sobrenome</title>
+
+    <style>
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: rgb(231, 143, 253);
+            text-align: center;
+            padding: 40px;
+        }
+        input{
+            padding: 10px;
+            font-size: 16px;
+            width: 250px;
+        }
+        button{
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #resultado{
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Descubra a origem do seu sobrenome</h1>
+
+<input type="text" id="sobrenome" placeholder="Digite aqui o seu sobrenome">
+<button onclick="buscar()">Buscar</button>
+
+<p id="resultado"></p>
+
+<script>
+async function buscar() {
+    const sobrenome = document.getElementById("sobrenome").value;
+
+    if(sobrenome === ""){
+        document.getElementById("resultado").innerHTML = "Digite um sobrenome!";
+        return;
+    }
+
+    const url = `https://api.nationalize.io/?name=${sobrenome}`;
+
+    try{
+        const resposta = await fetch(url);
+        const dados = await resposta.json();
+
+        let texto = "";
+
+        if(dados.country.length === 0){
+            texto = "Não foi possível encontrar a origem desse sobrenome.";
+        } else {
+            texto += `Possíveis origens para "<strong>${sobrenome}</strong>":<br><br>`;
+
+            dados.country.forEach(item => {
+                let porcentagem = (item.probability * 100).toFixed(2);
+                texto += `País: ${item.country_id} | Probabilidade: ${porcentagem}%<br>`;
+            });
+        }
+
+        document.getElementById("resultado").innerHTML = texto;
+
+    } catch(error){
+        document.getElementById("resultado").innerHTML = "Erro na API.";
+        console.error("Erro:", error);
+    }
+}
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
